@@ -1,0 +1,38 @@
+services:
+    admin:
+        container_name: admin
+        build: ./docker/php
+        ports: 
+            - "8080:80"
+        volumes: 
+            - ./admin:/var/www
+            - ./docker/php/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+        depends_on:
+            - db
+    front:
+        container_name: front
+        build: ./docker/php
+        ports: 
+            - "8081:80"
+        volumes: 
+            - ./front:/var/www
+            - ./docker/php/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+        depends_on:
+            - db
+    db:
+        container_name: db
+        restart: always
+        build:
+          context: ./db
+        environment:
+          MARIADB_ROOT_PASSWORD: tmcit
+          MARIADB_DATABASE: LESSON
+          MARIADB_USER: tmcit
+          MARIADB_PASSWORD: tmcit
+          TZ: 'Asia/Tokyo'
+        volumes:
+          - ./db/data:/var/lib/mysql
+        command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        ports:
+          - 3306:3306
+
